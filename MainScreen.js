@@ -8,9 +8,25 @@ import {
   StyleSheet,
   Button,
   PanResponder,
+  Modal,
 } from 'react-native';
 
 const MainScreen = ({ navigation }) => {
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+  const handleOpenModalOneSec = () => {
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 1000);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageData, setImageData] = useState([
     require('./assets/zz.png'),
@@ -124,6 +140,12 @@ const MainScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+    <Modal visible={isModalVisible} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <Image source={require('./assets/hello.png')} style={styles.modalImage} />
+          <Button title="Close" onPress={handleCloseModal} />
+          </View>
+      </Modal>
       <View style={styles.topBox} {...panResponder.panHandlers}>
         {selectedImage ? (
           <Image
@@ -167,10 +189,13 @@ const MainScreen = ({ navigation }) => {
             <Text style={styles.buttonText}>L&lt;5</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={moveImageToBottomRight}>
-            <Text style={styles.buttonText}>Top Right</Text>
+            <Text style={styles.buttonText}>Bottom Right</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.rotateButton} onPress={rotateImageBy90}>
-            <Text style={styles.buttonText}>Rotate 90°</Text>
+          <TouchableOpacity style={styles.button} onPress={handleOpenModal} color="blue">
+            <Text style={styles.buttonText}>Hello</Text>
+            </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleOpenModalOneSec} color="blue">
+            <Text style={styles.buttonText}>1 sec</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -195,6 +220,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalImage: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
   },
   topBox: {
     flex: 2,
