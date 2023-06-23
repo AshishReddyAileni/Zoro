@@ -13,9 +13,23 @@ import {
 
 const MainScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedFunctions, setSelectedFunctions] = useState([]);
 
   const handleOpenModal = () => {
     setModalVisible(true);
+  };
+  const handleCombinedFunctions = () => {
+    const functionsToExecute = [
+      moveImageToRight,
+      moveImageToLeft,
+      moveImageToBottomRight,
+      handleOpenModalOneSec,
+      handleImagePress,
+    ];
+  
+    functionsToExecute.forEach((func, index) => {
+      setTimeout(func, (index + 1) * 1500);
+    });
   };
   const handleOpenModalOneSec = () => {
     setModalVisible(true);
@@ -23,14 +37,17 @@ const MainScreen = ({ navigation }) => {
       setModalVisible(false);
     }, 1000);
   };
+  const [inputText, setInputText] = useState('');
+
 
   const handleCloseModal = () => {
     setModalVisible(false);
   };
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageData, setImageData] = useState([
-    require('./assets/zz.png'),
-    require('./assets/ss.png'),
+    require('./assets/zzzz.png'),
+    require('./assets/ccc.png'),
+    require('./assets/ssss.png'),
   ]);
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
@@ -53,9 +70,6 @@ const MainScreen = ({ navigation }) => {
     }
   };
 
-  const handleImagePress = (image) => {
-    setSelectedImage(image);
-  };
 
   const handlePanResponderMove = (e, gestureState) => {
     const { dx, dy } = gestureState;
@@ -110,40 +124,55 @@ const MainScreen = ({ navigation }) => {
   const moveImageToRight = () => {
     setCoordinates((prevCoordinates) => ({
       ...prevCoordinates,
-      x: prevCoordinates.x + 5,
+      x: prevCoordinates.x + 45,
     }));
   };
 
   const moveImageToLeft = () => {
     setCoordinates((prevCoordinates) => ({
       ...prevCoordinates,
-      x: prevCoordinates.x - 5,
+      x: prevCoordinates.x - 70,
     }));
   };
 
   const moveImageToBottomRight = () => {
     setCoordinates((prevCoordinates) => ({
-      x: prevCoordinates.x + 5,
-      y: prevCoordinates.y + 5,
+      x: prevCoordinates.x + 100,
+      y: prevCoordinates.y + 100,
     }));
   };
 
   const rotateImageBy90 = () => {
     handleRotationChange(rotation + 90);
   };
+  const [showText, setShowText] = useState(false);
+  const handleImagePress = (image) => {
+    setSelectedImage(image);
+    setShowText(true); // Show the text message
+  };
+  
+
+
 
   const renderImageItem = ({ item }) => (
     <TouchableOpacity style={styles.imageItem} onPress={() => handleImagePress(item)}>
-      <Image source={item} style={styles.thumbnailImage} />
-    </TouchableOpacity>
+    <Image source={item} style={styles.thumbnailImage} />
+    {showText && <Text style={styles.imageText}>Hi</Text>} {/* Conditionally render the text */}
+  </TouchableOpacity>
+    
   );
+  
+  const reset = () => {
+    setInputText('');
+    setCoordinates({ x: 0, y: 0 });
+  };
+
 
   return (
     <View style={styles.container}>
     <Modal visible={isModalVisible} animationType="fade" transparent>
         <View style={styles.modalContainer}>
-          <Image source={require('./assets/hello.png')} style={styles.modalImage} />
-          <Button title="Close" onPress={handleCloseModal} />
+          <Text>Hi</Text>
           </View>
       </Modal>
       <View style={styles.topBox} {...panResponder.panHandlers}>
@@ -163,14 +192,14 @@ const MainScreen = ({ navigation }) => {
 
       <View style={styles.middleBox}>
         <View style={styles.coordinateInputContainer}>
-          <Text>X:</Text>
+        <Text style={{ fontWeight: 'bold', color:'green'}}>X:</Text>
           <TextInput
             style={styles.coordinateInput}
             value={coordinates.x.toString()}
             onChangeText={handleXCoordinateChange}
             keyboardType="numeric"
           />
-          <Text>Y:</Text>
+          <Text style={{ fontWeight: 'bold', color:'green' }}>Y:</Text>
           <TextInput
             style={styles.coordinateInput}
             value={coordinates.y.toString()}
@@ -178,25 +207,12 @@ const MainScreen = ({ navigation }) => {
             keyboardType="numeric"
           />
         </View>
-        <Text>{rotation.toFixed(2)}</Text>
-        <Button title="Reset" onPress={() => setCoordinates({ x: 0.0, y: 0.0 })} color="red" />
-
+        <Text>{rotation.toFixed(5)}</Text>
+        <Button title="↺" onPress={(reset) => setCoordinates({ x: 0.0, y: 0.0 }) } color="blue" />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={moveImageToRight}>
-            <Text style={styles.buttonText}>R&gt;5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={moveImageToLeft}>
-            <Text style={styles.buttonText}>L&lt;5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={moveImageToBottomRight}>
-            <Text style={styles.buttonText}>Bottom Right</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleOpenModal} color="blue">
-            <Text style={styles.buttonText}>Hello</Text>
-            </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleOpenModalOneSec} color="blue">
-            <Text style={styles.buttonText}>1 sec</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleCombinedFunctions}>
+        <Text style={styles.buttonText}>▶</Text>
+      </TouchableOpacity>
         </View>
       </View>
 
@@ -206,6 +222,9 @@ const MainScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.imageBox} onPress={() => handleImagePress(imageData[1])}>
           <Image source={imageData[1]} style={styles.thumbnailImage} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.imageBox} onPress={() => handleImagePress(imageData[2])}>
+          <Image source={imageData[2]} style={styles.thumbnailImage} />
         </TouchableOpacity>
       </View>
 
@@ -220,6 +239,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor:'lightgrey',
   },
   modalContainer: {
     flex: 1,
@@ -228,30 +248,33 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalImage: {
-    width: 200,
-    height: 200,
+    width: 100,
+    height: 100,
     resizeMode: 'contain',
   },
   topBox: {
     flex: 2,
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: 'green',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:'white',
   },
   middleBox: {
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: 'green',
     padding: 10,
     marginVertical: 10,
     alignItems: 'center',
+    backgroundColor:'white',
   },
   bottomBox: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderWidth: 1,
+    justifyContent: 'center',
+    borderWidth: 3,
     borderColor: 'green',
     height: 50,
+    backgroundColor:'white',
   },
   placeholderText: {
     fontSize: 16,
@@ -276,6 +299,7 @@ const styles = StyleSheet.create({
     borderColor: 'green',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 4,
   },
   coordinateInputContainer: {
     flexDirection: 'row',
@@ -285,8 +309,8 @@ const styles = StyleSheet.create({
   coordinateInput: {
     width: 50,
     marginLeft: 5,
-    borderWidth: 1,
-    borderColor: 'gray',
+    borderWidth: 2,
+    borderColor: 'green',
     padding: 5,
   },
   button: {
@@ -312,6 +336,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 10,
+  },
+  imageText: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'green',
+    color: 'white',
+    fontWeight: 'bold',
+    padding: 5,
+    borderRadius: 5,
   },
 });
 
